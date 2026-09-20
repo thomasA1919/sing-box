@@ -7,7 +7,22 @@ import (
 	"sort"
 
 	commonEBPF "github.com/CHIZI-0618/sing-ebpf"
+	E "github.com/sagernet/sing/common/exceptions"
 )
+
+// validateActionPolicyScope keeps data-plane-specific mapping decisions in
+// sing-box. These fields have no corresponding map in the selected eBPF
+// paths, so silently passing them to sing-ebpf would turn a caller mistake
+// into an ignored policy.
+func validateActionPolicyScope(policy commonEBPF.ActionPolicy) error {
+	if len(policy.Local.SourceCIDR) > 0 || len(policy.Local.SourceMAC) > 0 {
+		return E.New("local eBPF action policy does not support source CIDR or MAC decisions")
+	}
+	if len(policy.Shared.UID) > 0 {
+		return E.New("shared eBPF action policy does not support UID decisions")
+	}
+	return nil
+}
 
 // compileProcessUIDPolicy converts sing-box's include/exclude/package result
 // into final UID actions for sing-ebpf. The library receives no selector
@@ -198,6 +213,9 @@ func (i *Inbound) compileActionPolicy() (commonEBPF.CompiledPolicy, error) {
 	appendPortDecisions(&policy.Shared, i.sharedBypassPort, i.sharedDNSMode, i.enableTCP, i.enableUDP)
 	i.localInitialDestinations = destinationPassDecisions(policy.Local.DestinationCIDR)
 	i.sharedInitialDestinations = destinationPassDecisions(policy.Shared.DestinationCIDR)
+	if err := validateActionPolicyScope(policy); err != nil {
+		return commonEBPF.CompiledPolicy{}, err
+	}
 	return commonEBPF.CompileActionPolicy(policy)
 }
 
