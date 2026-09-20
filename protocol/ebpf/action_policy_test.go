@@ -65,3 +65,31 @@ func TestCombineDestinationDecisionsRetainsStaticPasses(t *testing.T) {
 		t.Fatalf("combined decisions = %+v, want static and dynamic pass entries", combined)
 	}
 }
+
+func TestValidateActionPolicyScope(t *testing.T) {
+	tests := []struct {
+		name   string
+		local  commonEBPF.ActionScope
+		shared commonEBPF.ActionScope
+	}{
+		{
+			name:  "local source CIDR",
+			local: commonEBPF.ActionScope{SourceCIDR: []commonEBPF.CIDRDecision{{Prefix: netip.MustParsePrefix("192.0.2.0/24"), Action: commonEBPF.DecisionPass}}},
+		},
+		{
+			name:  "local source MAC",
+			local: commonEBPF.ActionScope{SourceMAC: []commonEBPF.MACDecision{{Address: commonEBPF.MACAddress{2, 0, 0, 0, 0, 1}, Action: commonEBPF.DecisionPass}}},
+		},
+		{
+			name:   "shared UID",
+			shared: commonEBPF.ActionScope{UID: []commonEBPF.UIDDecision{{Start: 1000, End: 1000, Action: commonEBPF.DecisionPass}}},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			if err := validateActionPolicyScope(commonEBPF.ActionPolicy{Local: test.local, Shared: test.shared}); err == nil {
+				t.Fatal("unsupported action scope was accepted")
+			}
+		})
+	}
+}
