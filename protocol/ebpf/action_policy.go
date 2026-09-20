@@ -33,13 +33,13 @@ func (i *Inbound) compileProcessUIDPolicy() ([]commonEBPF.UIDDecision, commonEBP
 	return decisions, commonEBPF.DecisionIntercept
 }
 
-func subtractUIDRanges(include, exclude []commonEBPF.UIDRange) []commonEBPF.UIDRange {
+func subtractUIDRanges(include, exclude []uidRange) []uidRange {
 	if len(include) == 0 {
 		return nil
 	}
 	include = normalizeUIDRanges(include)
 	exclude = normalizeUIDRanges(exclude)
-	result := make([]commonEBPF.UIDRange, 0, len(include))
+	result := make([]uidRange, 0, len(include))
 	excludeIndex := 0
 	for _, current := range include {
 		start, end := uint64(current.Start), uint64(current.End)
@@ -52,7 +52,7 @@ func subtractUIDRanges(include, exclude []commonEBPF.UIDRange) []commonEBPF.UIDR
 				break
 			}
 			if uint64(blocked.Start) > start {
-				result = append(result, commonEBPF.UIDRange{Start: uint32(start), End: blocked.Start - 1})
+				result = append(result, uidRange{Start: uint32(start), End: blocked.Start - 1})
 			}
 			if uint64(blocked.End) >= end {
 				start = end + 1
@@ -61,17 +61,17 @@ func subtractUIDRanges(include, exclude []commonEBPF.UIDRange) []commonEBPF.UIDR
 			start = uint64(blocked.End) + 1
 		}
 		if start <= end {
-			result = append(result, commonEBPF.UIDRange{Start: uint32(start), End: uint32(end)})
+			result = append(result, uidRange{Start: uint32(start), End: uint32(end)})
 		}
 	}
 	return result
 }
 
-func normalizeUIDRanges(ranges []commonEBPF.UIDRange) []commonEBPF.UIDRange {
+func normalizeUIDRanges(ranges []uidRange) []uidRange {
 	if len(ranges) == 0 {
 		return nil
 	}
-	normalized := append([]commonEBPF.UIDRange(nil), ranges...)
+	normalized := append([]uidRange(nil), ranges...)
 	sort.Slice(normalized, func(i, j int) bool {
 		if normalized[i].Start != normalized[j].Start {
 			return normalized[i].Start < normalized[j].Start
@@ -211,7 +211,7 @@ func destinationPassDecisions(decisions []commonEBPF.CIDRDecision) []commonEBPF.
 	return result
 }
 
-func appendPortDecisions(scope *commonEBPF.ActionScope, bypass []commonEBPF.PortRange, dnsMode string, enableTCP, enableUDP bool) {
+func appendPortDecisions(scope *commonEBPF.ActionScope, bypass []portRange, dnsMode string, enableTCP, enableUDP bool) {
 	for _, portRange := range bypass {
 		for port := portRange.Start; port <= portRange.End; port++ {
 			if port == 53 && dnsMode != dnsModeOff {

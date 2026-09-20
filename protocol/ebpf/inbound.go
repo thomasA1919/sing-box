@@ -85,7 +85,7 @@ type Inbound struct {
 	localDNSMode              string
 	sharedDNSMode             string
 	localIPv6                 bool
-	localPolicy               commonEBPF.LocalPolicy
+	localPolicy               localUIDPolicy
 	compiledPolicy            commonEBPF.CompiledPolicy
 	androidUIDOptions         *androidUIDOptions
 	sharedOptions             option.EBPFSharedOptions
@@ -95,8 +95,8 @@ type Inbound struct {
 	sharedRewriteAccess       sync.RWMutex
 	sharedIPv6                bool
 	sharedBypassPrivate       bool
-	localBypassPort           []commonEBPF.PortRange
-	sharedBypassPort          []commonEBPF.PortRange
+	localBypassPort           []portRange
+	sharedBypassPort          []portRange
 	tcPriority                uint16
 	fakeIPIPv4Prefix          netip.Prefix
 	fakeIPIPv6Prefix          netip.Prefix
@@ -327,8 +327,7 @@ func NewInbound(ctx context.Context, router adapter.Router, logger log.ContextLo
 		tcPriority:          uint16(options.TCPriority),
 		sharedIncludeMAC:    sharedIncludeMAC,
 		sharedExcludeMAC:    sharedExcludeMAC,
-		localPolicy: commonEBPF.LocalPolicy{
-			DNSMode:              toCommonDNSMode(localDNSMode),
+		localPolicy: localUIDPolicy{
 			BypassPrivateAddress: options.Local.BypassPrivateAddress == nil || *options.Local.BypassPrivateAddress,
 			IncludeUIDConfigured: len(options.Local.IncludeUID) > 0 ||
 				len(options.Local.IncludeUIDRange) > 0 || len(options.Local.IncludePackage) > 0,
@@ -391,7 +390,7 @@ func NewInbound(ctx context.Context, router adapter.Router, logger log.ContextLo
 	return inbound, nil
 }
 
-func warnBypassPortConflicts(logger log.ContextLogger, scope, dnsMode string, ports []commonEBPF.PortRange) {
+func warnBypassPortConflicts(logger log.ContextLogger, scope, dnsMode string, ports []portRange) {
 	if logger == nil || len(ports) == 0 {
 		return
 	}
@@ -408,16 +407,5 @@ func warnBypassPortConflicts(logger log.ContextLogger, scope, dnsMode string, po
 			logger.Warn("eBPF ", scope, ".bypass_port includes DNS port 53, but dns_mode=off already bypasses DNS")
 		}
 		break
-	}
-}
-
-func toCommonDNSMode(mode string) commonEBPF.DNSMode {
-	switch mode {
-	case dnsModeRespectPolicy:
-		return commonEBPF.DNSModeRespectPolicy
-	case dnsModeOff:
-		return commonEBPF.DNSModeOff
-	default:
-		return commonEBPF.DNSModeHijack
 	}
 }
