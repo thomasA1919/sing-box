@@ -98,6 +98,7 @@ type Inbound struct {
 	localBypassPort           []portRange
 	sharedBypassPort          []portRange
 	tcPriority                uint16
+	networkGeneration         uint64
 	fakeIPIPv4Prefix          netip.Prefix
 	fakeIPIPv6Prefix          netip.Prefix
 	fakeIPICMPReply           bool

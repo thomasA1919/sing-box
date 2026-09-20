@@ -104,16 +104,32 @@ type EBPFDiagnostics struct {
 	Tag           string    `json:"tag"`
 	State         string    `json:"state"`
 
-	LocalEnabled                 bool   `json:"local_enabled"`
-	LocalDataPlane               string `json:"local_data_plane,omitempty"`
-	LocalCgroupAttachMode        string `json:"local_cgroup_attach_mode,omitempty"`
-	LocalUDPCleanupMode          string `json:"local_udp_cleanup_mode,omitempty"`
-	LocalUDPUserspaceCleanupMode string `json:"local_udp_userspace_cleanup_mode,omitempty"`
-	LocalUDPStorageMode          string `json:"local_udp_storage_mode,omitempty"`
-	LocalUDPTimeMode             string `json:"local_udp_time_mode,omitempty"`
-	SharedEnabled                bool   `json:"shared_enabled"`
-	SharedDataPlane              string `json:"shared_data_plane,omitempty"`
-	FakeIPICMPReply              bool   `json:"fakeip_icmp_reply"`
+	LocalEnabled                 bool       `json:"local_enabled"`
+	LocalDataPlane               string     `json:"local_data_plane,omitempty"`
+	LocalCgroupAttachMode        string     `json:"local_cgroup_attach_mode,omitempty"`
+	LocalUDPCleanupMode          string     `json:"local_udp_cleanup_mode,omitempty"`
+	LocalUDPUserspaceCleanupMode string     `json:"local_udp_userspace_cleanup_mode,omitempty"`
+	LocalUDPStorageMode          string     `json:"local_udp_storage_mode,omitempty"`
+	LocalUDPTimeMode             string     `json:"local_udp_time_mode,omitempty"`
+	SharedEnabled                bool       `json:"shared_enabled"`
+	SharedDataPlane              string     `json:"shared_data_plane,omitempty"`
+	FakeIPICMPReply              bool       `json:"fakeip_icmp_reply"`
+	TCBackendMode                string     `json:"tc_backend_mode,omitempty"`
+	TCListenerLookupMode         string     `json:"tc_listener_lookup_mode,omitempty"`
+	TCAttachmentMode             string     `json:"tc_attachment_mode,omitempty"`
+	TCDeliveryInterface          string     `json:"tc_delivery_interface,omitempty"`
+	TCDeliveryInterfaceIndex     int        `json:"tc_delivery_interface_index,omitempty"`
+	TCRoutingMark                uint32     `json:"tc_routing_mark,omitempty"`
+	TCRoutingTable               int        `json:"tc_routing_table,omitempty"`
+	TCRoutingPriority            int        `json:"tc_routing_priority,omitempty"`
+	TCAttachmentCount            int        `json:"tc_attachment_count,omitempty"`
+	TCRetiredAttachmentCount     int        `json:"tc_retired_attachment_count,omitempty"`
+	TCRetiredDeliveryCount       int        `json:"tc_retired_delivery_count,omitempty"`
+	TCRequiresRebuild            bool       `json:"tc_requires_rebuild"`
+	TCHealthStatus               string     `json:"tc_health_status,omitempty"`
+	TCLastHealthCheckAt          *time.Time `json:"tc_last_health_check_at,omitempty"`
+	TCLastReconcileAt            *time.Time `json:"tc_last_reconcile_at,omitempty"`
+	TCNetworkGeneration          uint64     `json:"tc_network_generation,omitempty"`
 
 	Attachments []EBPFAttachmentDiagnostics `json:"attachments,omitempty"`
 
@@ -180,7 +196,23 @@ type tcOutcomeHistory struct {
 	lastRecoveryAt time.Time
 	// nextRetryAt is the zero time when the retry timer is currently
 	// disarmed (nothing outstanding across any of the three components).
-	nextRetryAt time.Time
+	nextRetryAt       time.Time
+	lastHealthCheckAt time.Time
+	lastHealthHealthy bool
+	lastReconcileAt   time.Time
+}
+
+func (i *Inbound) recordTCHealthCheck(healthy bool) {
+	i.diagnostics.access.Lock()
+	i.diagnostics.lastHealthCheckAt = time.Now()
+	i.diagnostics.lastHealthHealthy = healthy
+	i.diagnostics.access.Unlock()
+}
+
+func (i *Inbound) recordTCReconcile() {
+	i.diagnostics.access.Lock()
+	i.diagnostics.lastReconcileAt = time.Now()
+	i.diagnostics.access.Unlock()
 }
 
 // recordNextRetryDeadline is runTCInterfaceUpdates' onScheduleChange hook:
@@ -302,6 +334,22 @@ func diagnosticsForAPI(diagnostics EBPFDiagnostics) adapter.EBPFRuntimeDiagnosti
 		SharedEnabled:                diagnostics.SharedEnabled,
 		SharedDataPlane:              diagnostics.SharedDataPlane,
 		FakeIPICMPReply:              diagnostics.FakeIPICMPReply,
+		TCBackendMode:                diagnostics.TCBackendMode,
+		TCListenerLookupMode:         diagnostics.TCListenerLookupMode,
+		TCAttachmentMode:             diagnostics.TCAttachmentMode,
+		TCDeliveryInterface:          diagnostics.TCDeliveryInterface,
+		TCDeliveryInterfaceIndex:     diagnostics.TCDeliveryInterfaceIndex,
+		TCRoutingMark:                diagnostics.TCRoutingMark,
+		TCRoutingTable:               diagnostics.TCRoutingTable,
+		TCRoutingPriority:            diagnostics.TCRoutingPriority,
+		TCAttachmentCount:            diagnostics.TCAttachmentCount,
+		TCRetiredAttachmentCount:     diagnostics.TCRetiredAttachmentCount,
+		TCRetiredDeliveryCount:       diagnostics.TCRetiredDeliveryCount,
+		TCRequiresRebuild:            diagnostics.TCRequiresRebuild,
+		TCHealthStatus:               diagnostics.TCHealthStatus,
+		TCLastHealthCheckAt:          diagnostics.TCLastHealthCheckAt,
+		TCLastReconcileAt:            diagnostics.TCLastReconcileAt,
+		TCNetworkGeneration:          diagnostics.TCNetworkGeneration,
 		Attachments:                  attachments,
 		LastError:                    diagnostics.LastError,
 		LastErrorAt:                  diagnostics.LastErrorAt,
@@ -464,6 +512,26 @@ func (i *Inbound) Diagnostics() EBPFDiagnostics {
 	i.tcDataPlaneAccess.RUnlock()
 	if tcDataPlane != nil {
 		diagnostics.Attachments = append(diagnostics.Attachments, tcDataPlane.AttachmentDiagnostics()...)
+		tc := tcDataPlane.TCDiagnostics()
+		diagnostics.TCListenerLookupMode = tc.ListenerLookupMode
+		diagnostics.TCAttachmentMode = tc.AttachmentMode
+		diagnostics.TCDeliveryInterface = tc.NetworkInfo.DeliveryInterface
+		diagnostics.TCDeliveryInterfaceIndex = tc.NetworkInfo.DeliveryInterfaceIndex
+		diagnostics.TCRoutingMark = tc.NetworkInfo.RoutingMark
+		diagnostics.TCRoutingTable = tc.NetworkInfo.RoutingTable
+		diagnostics.TCRoutingPriority = tc.NetworkInfo.RoutingPriority
+		diagnostics.TCAttachmentCount = tc.AttachmentCount
+		diagnostics.TCRetiredAttachmentCount = tc.RetiredAttachmentCount
+		diagnostics.TCRetiredDeliveryCount = tc.RetiredDeliveryCount
+		diagnostics.TCRequiresRebuild = tc.RequiresRebuild
+		diagnostics.TCBackendMode = "socket_assign"
+		if tc.RequiresRebuild {
+			diagnostics.TCHealthStatus = "needs_reconcile"
+		} else if tc.AttachmentCount == 0 {
+			diagnostics.TCHealthStatus = "waiting_for_interface"
+		} else {
+			diagnostics.TCHealthStatus = "attached"
+		}
 	}
 	if shared := i.sharedRewriteInstance(); shared != nil {
 		if sharedDataPlane := shared.dataPlaneInstance(); sharedDataPlane != nil {
@@ -510,6 +578,18 @@ func (i *Inbound) Diagnostics() EBPFDiagnostics {
 	}
 
 	i.diagnostics.access.Lock()
+	if !i.diagnostics.lastHealthCheckAt.IsZero() {
+		healthAt := i.diagnostics.lastHealthCheckAt
+		diagnostics.TCLastHealthCheckAt = &healthAt
+		if !i.diagnostics.lastHealthHealthy && diagnostics.TCHealthStatus == "attached" {
+			diagnostics.TCHealthStatus = "degraded"
+		}
+	}
+	if !i.diagnostics.lastReconcileAt.IsZero() {
+		reconcileAt := i.diagnostics.lastReconcileAt
+		diagnostics.TCLastReconcileAt = &reconcileAt
+	}
+	diagnostics.TCNetworkGeneration = i.networkGeneration
 	if i.diagnostics.haveOutcome {
 		diagnostics.RecoveryPending = i.diagnostics.lastOutcome.general == tcSharedRewriteRecoverable ||
 			i.diagnostics.lastOutcome.sharedRewrite == tcSharedRewriteRecoverable ||
@@ -517,6 +597,13 @@ func (i *Inbound) Diagnostics() EBPFDiagnostics {
 		diagnostics.RecoveryUnrecoverable = i.diagnostics.lastOutcome.general == tcSharedRewriteUnrecoverable ||
 			i.diagnostics.lastOutcome.sharedRewrite == tcSharedRewriteUnrecoverable ||
 			i.diagnostics.lastOutcome.bypassRuleSet == tcSharedRewriteUnrecoverable
+	}
+	if diagnostics.TCHealthStatus != "" {
+		if diagnostics.RecoveryUnrecoverable {
+			diagnostics.TCHealthStatus = "needs_reconcile"
+		} else if diagnostics.RecoveryPending {
+			diagnostics.TCHealthStatus = "recovering"
+		}
 	}
 	if !i.diagnostics.lastRecoveryAt.IsZero() {
 		recoveryAt := i.diagnostics.lastRecoveryAt
@@ -705,6 +792,16 @@ func (d EBPFDiagnostics) WriteText(w io.Writer) error {
 	}
 	if d.SharedEnabled {
 		lines = append(lines, fmt.Sprintf("Shared data plane: %s", d.SharedDataPlane))
+	}
+	if d.TCBackendMode != "" {
+		lines = append(lines, fmt.Sprintf(
+			"TC runtime: backend=%s listener=%s attachment=%s delivery=%s#%d mark=%d table=%d priority=%d attachments=%d retired_attachments=%d retired_deliveries=%d health=%s generation=%d",
+			d.TCBackendMode, d.TCListenerLookupMode, d.TCAttachmentMode,
+			d.TCDeliveryInterface, d.TCDeliveryInterfaceIndex, d.TCRoutingMark,
+			d.TCRoutingTable, d.TCRoutingPriority, d.TCAttachmentCount,
+			d.TCRetiredAttachmentCount, d.TCRetiredDeliveryCount, d.TCHealthStatus,
+			d.TCNetworkGeneration,
+		))
 	}
 	lines = append(lines, fmt.Sprintf("FakeIP ICMP reply: %t", d.FakeIPICMPReply))
 	if len(d.Attachments) == 0 {

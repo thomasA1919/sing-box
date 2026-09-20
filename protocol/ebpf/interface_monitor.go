@@ -32,6 +32,9 @@ func (i *Inbound) InterfaceUpdated(ctx context.Context) {
 	if ctx.Err() != nil {
 		return
 	}
+	i.diagnostics.access.Lock()
+	i.networkGeneration++
+	i.diagnostics.access.Unlock()
 	// The raw netlink/default-interface monitors below are intentionally only
 	// responsible for keeping kernel attachments and host policy current. A
 	// network handover emits several transient topology states on Android (often
@@ -555,7 +558,8 @@ func runTCInterfaceUpdateLoopWithHealth(
 // deliberately avoids UpdateInterfaces, map refreshes, flow purges and any
 // netlink/sysctl mutation. A false result immediately falls through to the
 // existing full reconciliation path.
-func (i *Inbound) tcInterfaceHealthCheck(ctx context.Context) bool {
+func (i *Inbound) tcInterfaceHealthCheck(ctx context.Context) (healthy bool) {
+	defer func() { i.recordTCHealthCheck(healthy) }()
 	if ctx.Err() != nil {
 		return true
 	}
@@ -624,6 +628,7 @@ func (i *Inbound) updateTCInterfaces(ctx context.Context) (outcome tcUpdateOutco
 	if ctx.Err() != nil {
 		return
 	}
+	defer i.recordTCReconcile()
 	i.lifecycleAccess.Lock()
 	defer i.lifecycleAccess.Unlock()
 	if ctx.Err() != nil {

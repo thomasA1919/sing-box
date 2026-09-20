@@ -4,7 +4,7 @@ import "time"
 
 // EBPFDiagnosticsSchemaVersion versions the complete GetEBPFDiagnostics
 // response. It remains available even when no eBPF inbound is running.
-const EBPFDiagnosticsSchemaVersion = 5
+const EBPFDiagnosticsSchemaVersion = 6
 
 // EBPFDiagnosticsProvider exposes a running inbound's eBPF state to the
 // sing-box API without coupling the API service to the optional eBPF package.
@@ -63,6 +63,22 @@ type EBPFRuntimeDiagnostics struct {
 	SharedEnabled                bool
 	SharedDataPlane              string
 	FakeIPICMPReply              bool
+	TCBackendMode                string
+	TCListenerLookupMode         string
+	TCAttachmentMode             string
+	TCDeliveryInterface          string
+	TCDeliveryInterfaceIndex     int
+	TCRoutingMark                uint32
+	TCRoutingTable               int
+	TCRoutingPriority            int
+	TCAttachmentCount            int
+	TCRetiredAttachmentCount     int
+	TCRetiredDeliveryCount       int
+	TCRequiresRebuild            bool
+	TCHealthStatus               string
+	TCLastHealthCheckAt          *time.Time
+	TCLastReconcileAt            *time.Time
+	TCNetworkGeneration          uint64
 
 	Attachments []EBPFAttachmentDiagnostics
 

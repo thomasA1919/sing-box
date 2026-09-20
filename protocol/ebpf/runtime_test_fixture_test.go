@@ -15,8 +15,11 @@ type testTCRuntime struct {
 	closed      bool
 }
 
-func (r *testTCRuntime) Backend() *commonEBPF.TCBackend                 { return r.backend }
-func (r *testTCRuntime) NetworkInfo() commonEBPF.TCNetworkInfo          { return r.networkInfo }
+func (r *testTCRuntime) Backend() *commonEBPF.TCBackend        { return r.backend }
+func (r *testTCRuntime) NetworkInfo() commonEBPF.TCNetworkInfo { return r.networkInfo }
+func (r *testTCRuntime) TCDiagnostics() commonEBPF.TCDiagnostics {
+	return commonEBPF.TCDiagnostics{NetworkInfo: r.networkInfo}
+}
 func (r *testTCRuntime) Reconcile(string, []string, []netip.Addr) error { return nil }
 func (r *testTCRuntime) HealthCheck(string, []string, []netip.Addr) (bool, error) {
 	return true, nil

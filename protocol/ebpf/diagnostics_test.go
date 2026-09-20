@@ -97,13 +97,45 @@ func TestEBPFDiagnosticsIncludesEffectiveCgroupPaths(t *testing.T) {
 	}
 }
 
+func TestEBPFDiagnosticsIncludesEffectiveTCState(t *testing.T) {
+	observedHealth := time.Unix(1700000000, 0)
+	observedReconcile := observedHealth.Add(time.Second)
+	diagnostics := diagnosticsForAPI(EBPFDiagnostics{
+		SchemaVersion:            adapter.EBPFDiagnosticsSchemaVersion,
+		TCBackendMode:            "socket_assign",
+		TCListenerLookupMode:     "sockmap",
+		TCAttachmentMode:         "tcx",
+		TCDeliveryInterface:      "sb-delivery0",
+		TCDeliveryInterfaceIndex: 42,
+		TCRoutingMark:            1 << 29,
+		TCRoutingTable:           2022,
+		TCRoutingPriority:        10000,
+		TCAttachmentCount:        2,
+		TCRetiredAttachmentCount: 1,
+		TCRetiredDeliveryCount:   1,
+		TCRequiresRebuild:        false,
+		TCHealthStatus:           "attached",
+		TCLastHealthCheckAt:      &observedHealth,
+		TCLastReconcileAt:        &observedReconcile,
+		TCNetworkGeneration:      3,
+	})
+	if diagnostics.SchemaVersion != 6 || diagnostics.TCBackendMode != "socket_assign" ||
+		diagnostics.TCListenerLookupMode != "sockmap" || diagnostics.TCAttachmentMode != "tcx" ||
+		diagnostics.TCDeliveryInterfaceIndex != 42 || diagnostics.TCAttachmentCount != 2 ||
+		diagnostics.TCNetworkGeneration != 3 || diagnostics.TCLastHealthCheckAt == nil ||
+		!diagnostics.TCLastHealthCheckAt.Equal(observedHealth) || diagnostics.TCLastReconcileAt == nil ||
+		!diagnostics.TCLastReconcileAt.Equal(observedReconcile) {
+		t.Fatalf("effective TC state was not propagated: %+v", diagnostics)
+	}
+}
+
 func TestEBPFDiagnosticsSchemaVersionIncludesEffectiveRuntimeFields(t *testing.T) {
-	if adapter.EBPFDiagnosticsSchemaVersion != 5 {
-		t.Fatalf("schema version = %d, want 5 after adding effective runtime fields", adapter.EBPFDiagnosticsSchemaVersion)
+	if adapter.EBPFDiagnosticsSchemaVersion != 6 {
+		t.Fatalf("schema version = %d, want 6 after adding effective TC runtime fields", adapter.EBPFDiagnosticsSchemaVersion)
 	}
 	diagnostics := diagnosticsForAPI(EBPFDiagnostics{SchemaVersion: adapter.EBPFDiagnosticsSchemaVersion, LocalCgroupAttachMode: "link_create"})
-	if diagnostics.SchemaVersion != 5 {
-		t.Fatalf("diagnostics schema version = %d, want 5", diagnostics.SchemaVersion)
+	if diagnostics.SchemaVersion != 6 {
+		t.Fatalf("diagnostics schema version = %d, want 6", diagnostics.SchemaVersion)
 	}
 }
 

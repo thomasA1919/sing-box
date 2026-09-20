@@ -200,6 +200,9 @@ func (r *retryTestTCRuntime) Backend() *commonEBPF.TCBackend { return nil }
 func (r *retryTestTCRuntime) NetworkInfo() commonEBPF.TCNetworkInfo {
 	return commonEBPF.TCNetworkInfo{}
 }
+func (r *retryTestTCRuntime) TCDiagnostics() commonEBPF.TCDiagnostics {
+	return commonEBPF.TCDiagnostics{}
+}
 func (r *retryTestTCRuntime) Reconcile(string, []string, []netip.Addr) error { return nil }
 func (r *retryTestTCRuntime) HealthCheck(string, []string, []netip.Addr) (bool, error) {
 	return true, nil

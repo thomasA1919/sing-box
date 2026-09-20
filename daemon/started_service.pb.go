@@ -7,9 +7,9 @@
 package daemon
 
 import (
+	empty "github.com/golang/protobuf/ptypes/empty"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -7810,6 +7810,22 @@ type EBPFInboundDiagnostics struct {
 	LocalUdpUserspaceCleanupMode string                         `protobuf:"bytes,31,opt,name=localUdpUserspaceCleanupMode,proto3" json:"localUdpUserspaceCleanupMode,omitempty"`
 	LocalUdpStorageMode          string                         `protobuf:"bytes,32,opt,name=localUdpStorageMode,proto3" json:"localUdpStorageMode,omitempty"`
 	LocalUdpTimeMode             string                         `protobuf:"bytes,33,opt,name=localUdpTimeMode,proto3" json:"localUdpTimeMode,omitempty"`
+	TcBackendMode                string                         `protobuf:"bytes,34,opt,name=tcBackendMode,proto3" json:"tcBackendMode,omitempty"`
+	TcListenerLookupMode         string                         `protobuf:"bytes,35,opt,name=tcListenerLookupMode,proto3" json:"tcListenerLookupMode,omitempty"`
+	TcAttachmentMode             string                         `protobuf:"bytes,36,opt,name=tcAttachmentMode,proto3" json:"tcAttachmentMode,omitempty"`
+	TcDeliveryInterface          string                         `protobuf:"bytes,37,opt,name=tcDeliveryInterface,proto3" json:"tcDeliveryInterface,omitempty"`
+	TcDeliveryInterfaceIndex     int32                          `protobuf:"varint,38,opt,name=tcDeliveryInterfaceIndex,proto3" json:"tcDeliveryInterfaceIndex,omitempty"`
+	TcRoutingMark                uint32                         `protobuf:"varint,39,opt,name=tcRoutingMark,proto3" json:"tcRoutingMark,omitempty"`
+	TcRoutingTable               int32                          `protobuf:"varint,40,opt,name=tcRoutingTable,proto3" json:"tcRoutingTable,omitempty"`
+	TcRoutingPriority            int32                          `protobuf:"varint,41,opt,name=tcRoutingPriority,proto3" json:"tcRoutingPriority,omitempty"`
+	TcAttachmentCount            int32                          `protobuf:"varint,42,opt,name=tcAttachmentCount,proto3" json:"tcAttachmentCount,omitempty"`
+	TcRetiredAttachmentCount     int32                          `protobuf:"varint,43,opt,name=tcRetiredAttachmentCount,proto3" json:"tcRetiredAttachmentCount,omitempty"`
+	TcRetiredDeliveryCount       int32                          `protobuf:"varint,44,opt,name=tcRetiredDeliveryCount,proto3" json:"tcRetiredDeliveryCount,omitempty"`
+	TcRequiresRebuild            bool                           `protobuf:"varint,45,opt,name=tcRequiresRebuild,proto3" json:"tcRequiresRebuild,omitempty"`
+	TcHealthStatus               string                         `protobuf:"bytes,46,opt,name=tcHealthStatus,proto3" json:"tcHealthStatus,omitempty"`
+	TcLastHealthCheckAt          *int64                         `protobuf:"varint,47,opt,name=tcLastHealthCheckAt,proto3,oneof" json:"tcLastHealthCheckAt,omitempty"`
+	TcLastReconcileAt            *int64                         `protobuf:"varint,48,opt,name=tcLastReconcileAt,proto3,oneof" json:"tcLastReconcileAt,omitempty"`
+	TcNetworkGeneration          uint64                         `protobuf:"varint,49,opt,name=tcNetworkGeneration,proto3" json:"tcNetworkGeneration,omitempty"`
 	unknownFields                protoimpl.UnknownFields
 	sizeCache                    protoimpl.SizeCache
 }
@@ -8031,6 +8047,118 @@ func (x *EBPFInboundDiagnostics) GetLocalUdpTimeMode() string {
 		return x.LocalUdpTimeMode
 	}
 	return ""
+}
+
+func (x *EBPFInboundDiagnostics) GetTcBackendMode() string {
+	if x != nil {
+		return x.TcBackendMode
+	}
+	return ""
+}
+
+func (x *EBPFInboundDiagnostics) GetTcListenerLookupMode() string {
+	if x != nil {
+		return x.TcListenerLookupMode
+	}
+	return ""
+}
+
+func (x *EBPFInboundDiagnostics) GetTcAttachmentMode() string {
+	if x != nil {
+		return x.TcAttachmentMode
+	}
+	return ""
+}
+
+func (x *EBPFInboundDiagnostics) GetTcDeliveryInterface() string {
+	if x != nil {
+		return x.TcDeliveryInterface
+	}
+	return ""
+}
+
+func (x *EBPFInboundDiagnostics) GetTcDeliveryInterfaceIndex() int32 {
+	if x != nil {
+		return x.TcDeliveryInterfaceIndex
+	}
+	return 0
+}
+
+func (x *EBPFInboundDiagnostics) GetTcRoutingMark() uint32 {
+	if x != nil {
+		return x.TcRoutingMark
+	}
+	return 0
+}
+
+func (x *EBPFInboundDiagnostics) GetTcRoutingTable() int32 {
+	if x != nil {
+		return x.TcRoutingTable
+	}
+	return 0
+}
+
+func (x *EBPFInboundDiagnostics) GetTcRoutingPriority() int32 {
+	if x != nil {
+		return x.TcRoutingPriority
+	}
+	return 0
+}
+
+func (x *EBPFInboundDiagnostics) GetTcAttachmentCount() int32 {
+	if x != nil {
+		return x.TcAttachmentCount
+	}
+	return 0
+}
+
+func (x *EBPFInboundDiagnostics) GetTcRetiredAttachmentCount() int32 {
+	if x != nil {
+		return x.TcRetiredAttachmentCount
+	}
+	return 0
+}
+
+func (x *EBPFInboundDiagnostics) GetTcRetiredDeliveryCount() int32 {
+	if x != nil {
+		return x.TcRetiredDeliveryCount
+	}
+	return 0
+}
+
+func (x *EBPFInboundDiagnostics) GetTcRequiresRebuild() bool {
+	if x != nil {
+		return x.TcRequiresRebuild
+	}
+	return false
+}
+
+func (x *EBPFInboundDiagnostics) GetTcHealthStatus() string {
+	if x != nil {
+		return x.TcHealthStatus
+	}
+	return ""
+}
+
+func (x *EBPFInboundDiagnostics) GetTcLastHealthCheckAt() int64 {
+	if x != nil && x.TcLastHealthCheckAt != nil {
+		return *x.TcLastHealthCheckAt
+	}
+	return 0
+}
+
+func (x *EBPFInboundDiagnostics) GetTcLastReconcileAt() int64 {
+	if x != nil && x.TcLastReconcileAt != nil {
+		return *x.TcLastReconcileAt
+	}
+	return 0
+}
+
+func (x *EBPFInboundDiagnostics) GetTcNetworkGeneration() uint64 {
+	if x != nil {
+		return x.TcNetworkGeneration
+	}
+	return 0
 }
 
 type EBPFAttachmentDiagnostics struct {
@@ -9264,8 +9392,7 @@ const file_daemon_started_service_proto_rawDesc = "" +
 	"\aentries\x18\b \x01(\rR\aentries\x12\x1c\n" +
 	"\tsupported\x18\t \x01(\bR\tsupported\x12\x14\n" +
 	"\x05error\x18\n" +
-	" \x01(\tR\x05error\"\xd9\n" +
-	"\n" +
+	" \x01(\tR\x05error\"\x8b\x11\n" +
 	"\x16EBPFInboundDiagnostics\x12$\n" +
 	"\rschemaVersion\x18\x01 \x01(\x05R\rschemaVersion\x12\x1e\n" +
 	"\n" +
@@ -9296,10 +9423,28 @@ const file_daemon_started_service_proto_rawDesc = "" +
 	"\x13localUdpCleanupMode\x18\x1e \x01(\tR\x13localUdpCleanupMode\x12B\n" +
 	"\x1clocalUdpUserspaceCleanupMode\x18\x1f \x01(\tR\x1clocalUdpUserspaceCleanupMode\x120\n" +
 	"\x13localUdpStorageMode\x18  \x01(\tR\x13localUdpStorageMode\x12*\n" +
-	"\x10localUdpTimeMode\x18! \x01(\tR\x10localUdpTimeModeB\x0e\n" +
+	"\x10localUdpTimeMode\x18! \x01(\tR\x10localUdpTimeMode\x12$\n" +
+	"\rtcBackendMode\x18\" \x01(\tR\rtcBackendMode\x122\n" +
+	"\x14tcListenerLookupMode\x18# \x01(\tR\x14tcListenerLookupMode\x12*\n" +
+	"\x10tcAttachmentMode\x18$ \x01(\tR\x10tcAttachmentMode\x120\n" +
+	"\x13tcDeliveryInterface\x18% \x01(\tR\x13tcDeliveryInterface\x12:\n" +
+	"\x18tcDeliveryInterfaceIndex\x18& \x01(\x05R\x18tcDeliveryInterfaceIndex\x12$\n" +
+	"\rtcRoutingMark\x18' \x01(\rR\rtcRoutingMark\x12&\n" +
+	"\x0etcRoutingTable\x18( \x01(\x05R\x0etcRoutingTable\x12,\n" +
+	"\x11tcRoutingPriority\x18) \x01(\x05R\x11tcRoutingPriority\x12,\n" +
+	"\x11tcAttachmentCount\x18* \x01(\x05R\x11tcAttachmentCount\x12:\n" +
+	"\x18tcRetiredAttachmentCount\x18+ \x01(\x05R\x18tcRetiredAttachmentCount\x126\n" +
+	"\x16tcRetiredDeliveryCount\x18, \x01(\x05R\x16tcRetiredDeliveryCount\x12,\n" +
+	"\x11tcRequiresRebuild\x18- \x01(\bR\x11tcRequiresRebuild\x12&\n" +
+	"\x0etcHealthStatus\x18. \x01(\tR\x0etcHealthStatus\x125\n" +
+	"\x13tcLastHealthCheckAt\x18/ \x01(\x03H\x03R\x13tcLastHealthCheckAt\x88\x01\x01\x121\n" +
+	"\x11tcLastReconcileAt\x180 \x01(\x03H\x04R\x11tcLastReconcileAt\x88\x01\x01\x120\n" +
+	"\x13tcNetworkGeneration\x181 \x01(\x04R\x13tcNetworkGenerationB\x0e\n" +
 	"\f_lastErrorAtB\x11\n" +
 	"\x0f_lastRecoveryAtB\x0e\n" +
-	"\f_nextRetryAt\"\xdb\x01\n" +
+	"\f_nextRetryAtB\x16\n" +
+	"\x14_tcLastHealthCheckAtB\x14\n" +
+	"\x12_tcLastReconcileAt\"\xdb\x01\n" +
 	"\x19EBPFAttachmentDiagnostics\x12$\n" +
 	"\rinterfaceName\x18\x01 \x01(\tR\rinterfaceName\x12&\n" +
 	"\x0einterfaceIndex\x18\x02 \x01(\x05R\x0einterfaceIndex\x12\x12\n" +
@@ -9567,7 +9712,7 @@ var file_daemon_started_service_proto_goTypes = []any{
 	(*Log_Message)(nil),                       // 119: daemon.Log.Message
 	nil,                                       // 120: daemon.OpenConnectAuthFormResponse.ValuesEntry
 	nil,                                       // 121: daemon.EBPFBypassRuleSetDiagnostics.BackendStateEntry
-	(*emptypb.Empty)(nil),                     // 122: google.protobuf.Empty
+	(*empty.Empty)(nil),                       // 122: google.protobuf.Empty
 }
 var file_daemon_started_service_proto_depIdxs = []int32{
 	4,   // 0: daemon.ServiceStatus.status:type_name -> daemon.ServiceStatus.Type
