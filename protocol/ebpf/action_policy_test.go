@@ -11,10 +11,10 @@ import (
 
 func TestCompileProcessUIDPolicySubtractsExcludedRanges(t *testing.T) {
 	inbound := &Inbound{
-		localPolicy: commonEBPF.LocalPolicy{
+		localPolicy: localUIDPolicy{
 			IncludeUIDConfigured: true,
-			IncludeUID:           []commonEBPF.UIDRange{{Start: 1000, End: 1999}},
-			ExcludeUID:           []commonEBPF.UIDRange{{Start: 1400, End: 1499}},
+			IncludeUID:           []uidRange{{Start: 1000, End: 1999}},
+			ExcludeUID:           []uidRange{{Start: 1400, End: 1499}},
 		},
 	}
 	decisions, defaultAction := inbound.compileProcessUIDPolicy()
@@ -36,8 +36,8 @@ func TestCompileProcessUIDPolicySubtractsExcludedRanges(t *testing.T) {
 }
 
 func TestCompileProcessUIDPolicyUsesExcludeActionsByDefault(t *testing.T) {
-	inbound := &Inbound{localPolicy: commonEBPF.LocalPolicy{
-		ExcludeUID: []commonEBPF.UIDRange{{Start: 10000, End: 10010}},
+	inbound := &Inbound{localPolicy: localUIDPolicy{
+		ExcludeUID: []uidRange{{Start: 10000, End: 10010}},
 	}}
 	decisions, defaultAction := inbound.compileProcessUIDPolicy()
 	if defaultAction != commonEBPF.DecisionIntercept {

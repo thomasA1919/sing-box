@@ -16,7 +16,7 @@ func TestNeedsLPMPolicyUsesCompiledEntries(t *testing.T) {
 	inbound := &Inbound{
 		localEnabled:   true,
 		localDataPlane: localDataPlaneCgroup,
-		localPolicy: commonEBPF.LocalPolicy{
+		localPolicy: localUIDPolicy{
 			IncludeUIDConfigured: true,
 		},
 	}
@@ -24,13 +24,13 @@ func TestNeedsLPMPolicyUsesCompiledEntries(t *testing.T) {
 		t.Fatal("an explicitly empty UID include policy does not update an LPM trie")
 	}
 
-	inbound.localPolicy.IncludeUID = []commonEBPF.UIDRange{{Start: 1000, End: 1000}}
+	inbound.localPolicy.IncludeUID = []uidRange{{Start: 1000, End: 1000}}
 	if !inbound.needsLPMPolicy() {
 		t.Fatal("a compiled UID entry requires an LPM trie update")
 	}
 
 	inbound.localEnabled = false
-	inbound.localPolicy = commonEBPF.LocalPolicy{}
+	inbound.localPolicy = localUIDPolicy{}
 	inbound.sharedEnabled = true
 	inbound.sharedDataPlane = sharedDataPlanePacketRewrite
 	inbound.sharedOptions.IncludeSourceCIDR = []netip.Prefix{netip.MustParsePrefix("192.0.2.0/24")}
