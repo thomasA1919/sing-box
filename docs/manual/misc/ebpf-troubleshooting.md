@@ -136,6 +136,16 @@ For local cgroup, also record the effective runtime fields returned by the API:
 `local_udp_time_mode`. These describe the path actually selected after vendor
 kernel and security-policy fallbacks; they are not capability guesses.
 
+When local TC or shared `socket_assign` is enabled, the API also reports `tc_*`
+runtime fields: the effective `tcx`/`clsact`/`mixed` attachment mechanism,
+`sockmap`/`direct` TCP listener lookup, delivery interface and ifindex, policy
+routing mark/table/priority, active and retired resource counts, health state,
+the last health-check/reconcile times, and the network generation. These are
+live resource snapshots rather than kernel-version guesses. The network
+generation increments at the managed network-change boundary so before/after
+captures can separate handover effects. Reading these fields does not add
+per-packet counters, full map scans, or a new background timer.
+
 Counter values are cumulative for the current process or cache lifetime. Take a
 snapshot immediately before and after a small controlled test instead of
 interpreting a single large number:

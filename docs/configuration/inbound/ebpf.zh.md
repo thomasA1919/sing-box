@@ -254,6 +254,10 @@ raw-IP、PPP/PPPoE 和受支持的隧道链路应使用 `socket_assign`。local 
   UDP 清理、socket storage 和时间源模式；需要启用
   [sing-box API 服务](/zh/configuration/service/api/)。
 
+local TC 和 shared `socket_assign` 还会报告实际的 TCX/clsact 挂载机制、SOCKMAP/direct
+listener 查找、delivery 接口、策略路由值、活动/待回收资源数量、health/reconcile 时间，
+以及在受管网络切换边界递增的网络代数。
+
 诊断响应在顶层携带 `schemaVersion`，即使当前没有运行中的 eBPF 入站也会返回。客户端
 应以该字段作为整份响应的版本；每个入站中的同名字段仅为兼容旧客户端而保留。
 
