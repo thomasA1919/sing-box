@@ -104,11 +104,16 @@ type EBPFDiagnostics struct {
 	Tag           string    `json:"tag"`
 	State         string    `json:"state"`
 
-	LocalEnabled    bool   `json:"local_enabled"`
-	LocalDataPlane  string `json:"local_data_plane,omitempty"`
-	SharedEnabled   bool   `json:"shared_enabled"`
-	SharedDataPlane string `json:"shared_data_plane,omitempty"`
-	FakeIPICMPReply bool   `json:"fakeip_icmp_reply"`
+	LocalEnabled                 bool   `json:"local_enabled"`
+	LocalDataPlane               string `json:"local_data_plane,omitempty"`
+	LocalCgroupAttachMode        string `json:"local_cgroup_attach_mode,omitempty"`
+	LocalUDPCleanupMode          string `json:"local_udp_cleanup_mode,omitempty"`
+	LocalUDPUserspaceCleanupMode string `json:"local_udp_userspace_cleanup_mode,omitempty"`
+	LocalUDPStorageMode          string `json:"local_udp_storage_mode,omitempty"`
+	LocalUDPTimeMode             string `json:"local_udp_time_mode,omitempty"`
+	SharedEnabled                bool   `json:"shared_enabled"`
+	SharedDataPlane              string `json:"shared_data_plane,omitempty"`
+	FakeIPICMPReply              bool   `json:"fakeip_icmp_reply"`
 
 	Attachments []EBPFAttachmentDiagnostics `json:"attachments,omitempty"`
 
@@ -283,22 +288,27 @@ func diagnosticsForAPI(diagnostics EBPFDiagnostics) adapter.EBPFRuntimeDiagnosti
 		})
 	}
 	return adapter.EBPFRuntimeDiagnostics{
-		SchemaVersion:         diagnostics.SchemaVersion,
-		ObservedAt:            diagnostics.ObservedAt,
-		Tag:                   diagnostics.Tag,
-		State:                 diagnostics.State,
-		LocalEnabled:          diagnostics.LocalEnabled,
-		LocalDataPlane:        diagnostics.LocalDataPlane,
-		SharedEnabled:         diagnostics.SharedEnabled,
-		SharedDataPlane:       diagnostics.SharedDataPlane,
-		FakeIPICMPReply:       diagnostics.FakeIPICMPReply,
-		Attachments:           attachments,
-		LastError:             diagnostics.LastError,
-		LastErrorAt:           diagnostics.LastErrorAt,
-		LastRecoveryAt:        diagnostics.LastRecoveryAt,
-		RecoveryPending:       diagnostics.RecoveryPending,
-		RecoveryUnrecoverable: diagnostics.RecoveryUnrecoverable,
-		NextRetryAt:           diagnostics.NextRetryAt,
+		SchemaVersion:                diagnostics.SchemaVersion,
+		ObservedAt:                   diagnostics.ObservedAt,
+		Tag:                          diagnostics.Tag,
+		State:                        diagnostics.State,
+		LocalEnabled:                 diagnostics.LocalEnabled,
+		LocalDataPlane:               diagnostics.LocalDataPlane,
+		LocalCgroupAttachMode:        diagnostics.LocalCgroupAttachMode,
+		LocalUDPCleanupMode:          diagnostics.LocalUDPCleanupMode,
+		LocalUDPUserspaceCleanupMode: diagnostics.LocalUDPUserspaceCleanupMode,
+		LocalUDPStorageMode:          diagnostics.LocalUDPStorageMode,
+		LocalUDPTimeMode:             diagnostics.LocalUDPTimeMode,
+		SharedEnabled:                diagnostics.SharedEnabled,
+		SharedDataPlane:              diagnostics.SharedDataPlane,
+		FakeIPICMPReply:              diagnostics.FakeIPICMPReply,
+		Attachments:                  attachments,
+		LastError:                    diagnostics.LastError,
+		LastErrorAt:                  diagnostics.LastErrorAt,
+		LastRecoveryAt:               diagnostics.LastRecoveryAt,
+		RecoveryPending:              diagnostics.RecoveryPending,
+		RecoveryUnrecoverable:        diagnostics.RecoveryUnrecoverable,
+		NextRetryAt:                  diagnostics.NextRetryAt,
 		LocalBypassRuleSet: adapter.EBPFBypassRuleSetDiagnostics{
 			Consistent:            diagnostics.LocalBypassRuleSet.Consistent,
 			Pending:               diagnostics.LocalBypassRuleSet.Pending,
@@ -437,6 +447,13 @@ func (i *Inbound) Diagnostics() EBPFDiagnostics {
 	}
 	if i.localEnabled {
 		diagnostics.LocalDataPlane = i.localDataPlane
+	}
+	if backend := i.cgroupBackendInstance(); backend != nil && !backend.IsClosed() {
+		diagnostics.LocalCgroupAttachMode = backend.AttachMode()
+		diagnostics.LocalUDPCleanupMode = backend.UDPCleanupMode()
+		diagnostics.LocalUDPUserspaceCleanupMode = backend.UDPUserspaceCleanupMode()
+		diagnostics.LocalUDPStorageMode = backend.UDPStorageMode()
+		diagnostics.LocalUDPTimeMode = backend.UDPTimeMode()
 	}
 	if i.sharedEnabled {
 		diagnostics.SharedDataPlane = i.sharedDataPlane

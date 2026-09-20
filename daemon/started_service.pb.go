@@ -7,9 +7,9 @@
 package daemon
 
 import (
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -7782,31 +7782,36 @@ func (x *EBPFMapDiagnostics) GetError() string {
 }
 
 type EBPFInboundDiagnostics struct {
-	state                 protoimpl.MessageState         `protogen:"open.v1"`
-	SchemaVersion         int32                          `protobuf:"varint,1,opt,name=schemaVersion,proto3" json:"schemaVersion,omitempty"`
-	ObservedAt            int64                          `protobuf:"varint,2,opt,name=observedAt,proto3" json:"observedAt,omitempty"`
-	Tag                   string                         `protobuf:"bytes,3,opt,name=tag,proto3" json:"tag,omitempty"`
-	State                 string                         `protobuf:"bytes,4,opt,name=state,proto3" json:"state,omitempty"`
-	LocalEnabled          bool                           `protobuf:"varint,5,opt,name=localEnabled,proto3" json:"localEnabled,omitempty"`
-	LocalDataPlane        string                         `protobuf:"bytes,6,opt,name=localDataPlane,proto3" json:"localDataPlane,omitempty"`
-	SharedEnabled         bool                           `protobuf:"varint,7,opt,name=sharedEnabled,proto3" json:"sharedEnabled,omitempty"`
-	SharedDataPlane       string                         `protobuf:"bytes,8,opt,name=sharedDataPlane,proto3" json:"sharedDataPlane,omitempty"`
-	FakeIPICMPReply       bool                           `protobuf:"varint,9,opt,name=fakeIPICMPReply,proto3" json:"fakeIPICMPReply,omitempty"`
-	Attachments           []*EBPFAttachmentDiagnostics   `protobuf:"bytes,10,rep,name=attachments,proto3" json:"attachments,omitempty"`
-	LastError             string                         `protobuf:"bytes,11,opt,name=lastError,proto3" json:"lastError,omitempty"`
-	LastErrorAt           *int64                         `protobuf:"varint,12,opt,name=lastErrorAt,proto3,oneof" json:"lastErrorAt,omitempty"`
-	LastRecoveryAt        *int64                         `protobuf:"varint,13,opt,name=lastRecoveryAt,proto3,oneof" json:"lastRecoveryAt,omitempty"`
-	RecoveryPending       bool                           `protobuf:"varint,14,opt,name=recoveryPending,proto3" json:"recoveryPending,omitempty"`
-	RecoveryUnrecoverable bool                           `protobuf:"varint,15,opt,name=recoveryUnrecoverable,proto3" json:"recoveryUnrecoverable,omitempty"`
-	NextRetryAt           *int64                         `protobuf:"varint,16,opt,name=nextRetryAt,proto3,oneof" json:"nextRetryAt,omitempty"`
-	UdpSessionCount       int64                          `protobuf:"varint,23,opt,name=udpSessionCount,proto3" json:"udpSessionCount,omitempty"`
-	UdpReplySockets       *EBPFUDPReplySocketDiagnostics `protobuf:"bytes,24,opt,name=udpReplySockets,proto3" json:"udpReplySockets,omitempty"`
-	Counters              *EBPFCounters                  `protobuf:"bytes,25,opt,name=counters,proto3" json:"counters,omitempty"`
-	UdpNAT                *EBPFUDPNATDiagnostics         `protobuf:"bytes,26,opt,name=udpNAT,proto3" json:"udpNAT,omitempty"`
-	LocalBypassRuleSet    *EBPFBypassRuleSetDiagnostics  `protobuf:"bytes,27,opt,name=localBypassRuleSet,proto3" json:"localBypassRuleSet,omitempty"`
-	SharedBypassRuleSet   *EBPFBypassRuleSetDiagnostics  `protobuf:"bytes,28,opt,name=sharedBypassRuleSet,proto3" json:"sharedBypassRuleSet,omitempty"`
-	unknownFields         protoimpl.UnknownFields
-	sizeCache             protoimpl.SizeCache
+	state                        protoimpl.MessageState         `protogen:"open.v1"`
+	SchemaVersion                int32                          `protobuf:"varint,1,opt,name=schemaVersion,proto3" json:"schemaVersion,omitempty"`
+	ObservedAt                   int64                          `protobuf:"varint,2,opt,name=observedAt,proto3" json:"observedAt,omitempty"`
+	Tag                          string                         `protobuf:"bytes,3,opt,name=tag,proto3" json:"tag,omitempty"`
+	State                        string                         `protobuf:"bytes,4,opt,name=state,proto3" json:"state,omitempty"`
+	LocalEnabled                 bool                           `protobuf:"varint,5,opt,name=localEnabled,proto3" json:"localEnabled,omitempty"`
+	LocalDataPlane               string                         `protobuf:"bytes,6,opt,name=localDataPlane,proto3" json:"localDataPlane,omitempty"`
+	SharedEnabled                bool                           `protobuf:"varint,7,opt,name=sharedEnabled,proto3" json:"sharedEnabled,omitempty"`
+	SharedDataPlane              string                         `protobuf:"bytes,8,opt,name=sharedDataPlane,proto3" json:"sharedDataPlane,omitempty"`
+	FakeIPICMPReply              bool                           `protobuf:"varint,9,opt,name=fakeIPICMPReply,proto3" json:"fakeIPICMPReply,omitempty"`
+	Attachments                  []*EBPFAttachmentDiagnostics   `protobuf:"bytes,10,rep,name=attachments,proto3" json:"attachments,omitempty"`
+	LastError                    string                         `protobuf:"bytes,11,opt,name=lastError,proto3" json:"lastError,omitempty"`
+	LastErrorAt                  *int64                         `protobuf:"varint,12,opt,name=lastErrorAt,proto3,oneof" json:"lastErrorAt,omitempty"`
+	LastRecoveryAt               *int64                         `protobuf:"varint,13,opt,name=lastRecoveryAt,proto3,oneof" json:"lastRecoveryAt,omitempty"`
+	RecoveryPending              bool                           `protobuf:"varint,14,opt,name=recoveryPending,proto3" json:"recoveryPending,omitempty"`
+	RecoveryUnrecoverable        bool                           `protobuf:"varint,15,opt,name=recoveryUnrecoverable,proto3" json:"recoveryUnrecoverable,omitempty"`
+	NextRetryAt                  *int64                         `protobuf:"varint,16,opt,name=nextRetryAt,proto3,oneof" json:"nextRetryAt,omitempty"`
+	UdpSessionCount              int64                          `protobuf:"varint,23,opt,name=udpSessionCount,proto3" json:"udpSessionCount,omitempty"`
+	UdpReplySockets              *EBPFUDPReplySocketDiagnostics `protobuf:"bytes,24,opt,name=udpReplySockets,proto3" json:"udpReplySockets,omitempty"`
+	Counters                     *EBPFCounters                  `protobuf:"bytes,25,opt,name=counters,proto3" json:"counters,omitempty"`
+	UdpNAT                       *EBPFUDPNATDiagnostics         `protobuf:"bytes,26,opt,name=udpNAT,proto3" json:"udpNAT,omitempty"`
+	LocalBypassRuleSet           *EBPFBypassRuleSetDiagnostics  `protobuf:"bytes,27,opt,name=localBypassRuleSet,proto3" json:"localBypassRuleSet,omitempty"`
+	SharedBypassRuleSet          *EBPFBypassRuleSetDiagnostics  `protobuf:"bytes,28,opt,name=sharedBypassRuleSet,proto3" json:"sharedBypassRuleSet,omitempty"`
+	LocalCgroupAttachMode        string                         `protobuf:"bytes,29,opt,name=localCgroupAttachMode,proto3" json:"localCgroupAttachMode,omitempty"`
+	LocalUdpCleanupMode          string                         `protobuf:"bytes,30,opt,name=localUdpCleanupMode,proto3" json:"localUdpCleanupMode,omitempty"`
+	LocalUdpUserspaceCleanupMode string                         `protobuf:"bytes,31,opt,name=localUdpUserspaceCleanupMode,proto3" json:"localUdpUserspaceCleanupMode,omitempty"`
+	LocalUdpStorageMode          string                         `protobuf:"bytes,32,opt,name=localUdpStorageMode,proto3" json:"localUdpStorageMode,omitempty"`
+	LocalUdpTimeMode             string                         `protobuf:"bytes,33,opt,name=localUdpTimeMode,proto3" json:"localUdpTimeMode,omitempty"`
+	unknownFields                protoimpl.UnknownFields
+	sizeCache                    protoimpl.SizeCache
 }
 
 func (x *EBPFInboundDiagnostics) Reset() {
@@ -7991,6 +7996,41 @@ func (x *EBPFInboundDiagnostics) GetSharedBypassRuleSet() *EBPFBypassRuleSetDiag
 		return x.SharedBypassRuleSet
 	}
 	return nil
+}
+
+func (x *EBPFInboundDiagnostics) GetLocalCgroupAttachMode() string {
+	if x != nil {
+		return x.LocalCgroupAttachMode
+	}
+	return ""
+}
+
+func (x *EBPFInboundDiagnostics) GetLocalUdpCleanupMode() string {
+	if x != nil {
+		return x.LocalUdpCleanupMode
+	}
+	return ""
+}
+
+func (x *EBPFInboundDiagnostics) GetLocalUdpUserspaceCleanupMode() string {
+	if x != nil {
+		return x.LocalUdpUserspaceCleanupMode
+	}
+	return ""
+}
+
+func (x *EBPFInboundDiagnostics) GetLocalUdpStorageMode() string {
+	if x != nil {
+		return x.LocalUdpStorageMode
+	}
+	return ""
+}
+
+func (x *EBPFInboundDiagnostics) GetLocalUdpTimeMode() string {
+	if x != nil {
+		return x.LocalUdpTimeMode
+	}
+	return ""
 }
 
 type EBPFAttachmentDiagnostics struct {
@@ -9224,7 +9264,8 @@ const file_daemon_started_service_proto_rawDesc = "" +
 	"\aentries\x18\b \x01(\rR\aentries\x12\x1c\n" +
 	"\tsupported\x18\t \x01(\bR\tsupported\x12\x14\n" +
 	"\x05error\x18\n" +
-	" \x01(\tR\x05error\"\xcf\b\n" +
+	" \x01(\tR\x05error\"\xd9\n" +
+	"\n" +
 	"\x16EBPFInboundDiagnostics\x12$\n" +
 	"\rschemaVersion\x18\x01 \x01(\x05R\rschemaVersion\x12\x1e\n" +
 	"\n" +
@@ -9250,7 +9291,12 @@ const file_daemon_started_service_proto_rawDesc = "" +
 	"\bcounters\x18\x19 \x01(\v2\x14.daemon.EBPFCountersR\bcounters\x125\n" +
 	"\x06udpNAT\x18\x1a \x01(\v2\x1d.daemon.EBPFUDPNATDiagnosticsR\x06udpNAT\x12T\n" +
 	"\x12localBypassRuleSet\x18\x1b \x01(\v2$.daemon.EBPFBypassRuleSetDiagnosticsR\x12localBypassRuleSet\x12V\n" +
-	"\x13sharedBypassRuleSet\x18\x1c \x01(\v2$.daemon.EBPFBypassRuleSetDiagnosticsR\x13sharedBypassRuleSetB\x0e\n" +
+	"\x13sharedBypassRuleSet\x18\x1c \x01(\v2$.daemon.EBPFBypassRuleSetDiagnosticsR\x13sharedBypassRuleSet\x124\n" +
+	"\x15localCgroupAttachMode\x18\x1d \x01(\tR\x15localCgroupAttachMode\x120\n" +
+	"\x13localUdpCleanupMode\x18\x1e \x01(\tR\x13localUdpCleanupMode\x12B\n" +
+	"\x1clocalUdpUserspaceCleanupMode\x18\x1f \x01(\tR\x1clocalUdpUserspaceCleanupMode\x120\n" +
+	"\x13localUdpStorageMode\x18  \x01(\tR\x13localUdpStorageMode\x12*\n" +
+	"\x10localUdpTimeMode\x18! \x01(\tR\x10localUdpTimeModeB\x0e\n" +
 	"\f_lastErrorAtB\x11\n" +
 	"\x0f_lastRecoveryAtB\x0e\n" +
 	"\f_nextRetryAt\"\xdb\x01\n" +

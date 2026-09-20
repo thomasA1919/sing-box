@@ -53,11 +53,16 @@ type EBPFRuntimeDiagnostics struct {
 	Tag           string
 	State         string
 
-	LocalEnabled    bool
-	LocalDataPlane  string
-	SharedEnabled   bool
-	SharedDataPlane string
-	FakeIPICMPReply bool
+	LocalEnabled                 bool
+	LocalDataPlane               string
+	LocalCgroupAttachMode        string
+	LocalUDPCleanupMode          string
+	LocalUDPUserspaceCleanupMode string
+	LocalUDPStorageMode          string
+	LocalUDPTimeMode             string
+	SharedEnabled                bool
+	SharedDataPlane              string
+	FakeIPICMPReply              bool
 
 	Attachments []EBPFAttachmentDiagnostics
 
