@@ -250,7 +250,8 @@ raw-IP、PPP/PPPoE 和受支持的隧道链路应使用 `socket_assign`。local 
 
 - `sing-box tools ebpf status` 对所选数据面执行不挂载的内核能力和对象加载预检。
 - `sing-box api ebpf` 从运行实例读取 attachment、恢复状态、活动程序、map 占用、资源、
-  UDP/会话统计、分片/放行计数和失败信息；需要启用
+  UDP/会话统计、分片/放行计数和失败信息。local cgroup 还会报告回退后实际使用的挂载、
+  UDP 清理、socket storage 和时间源模式；需要启用
   [sing-box API 服务](/zh/configuration/service/api/)。
 
 诊断响应在顶层携带 `schemaVersion`，即使当前没有运行中的 eBPF 入站也会返回。客户端

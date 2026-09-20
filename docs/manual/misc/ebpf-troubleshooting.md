@@ -129,6 +129,13 @@ Read attachment entries as the source of truth for the mechanism actually in
 use. A configured path without a corresponding attachment may legitimately be
 waiting for an interface; a cgroup attachment has no network-interface filter.
 
+For local cgroup, also record the effective runtime fields returned by the API:
+`local_cgroup_attach_mode` (`link_create`, `legacy_multi`,
+`legacy_exclusive`, or `mixed`), `local_udp_cleanup_mode`,
+`local_udp_userspace_cleanup_mode`, `local_udp_storage_mode`, and
+`local_udp_time_mode`. These describe the path actually selected after vendor
+kernel and security-policy fallbacks; they are not capability guesses.
+
 Counter values are cumulative for the current process or cache lifetime. Take a
 snapshot immediately before and after a small controlled test instead of
 interpreting a single large number:

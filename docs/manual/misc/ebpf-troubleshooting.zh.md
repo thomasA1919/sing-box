@@ -115,6 +115,12 @@ local/shared 角色和帧格式。网络事件仅在 attachment 或受管
 attachment 列表是实际运行机制的准确信息。已配置路径没有对应 attachment 时，可能只是
 等待接口；cgroup attachment 本来就不存在网络接口 filter。
 
+local cgroup 还应记录 API 返回的实际运行字段：`local_cgroup_attach_mode`
+（`link_create`、`legacy_multi`、`legacy_exclusive` 或 `mixed`）、
+`local_udp_cleanup_mode`、`local_udp_userspace_cleanup_mode`、
+`local_udp_storage_mode` 和 `local_udp_time_mode`。这些字段表示厂商内核或安全策略
+触发回退后真正选中的路径，不是能力猜测。
+
 计数器通常在当前进程或缓存生命周期内累计。应在一个小规模受控测试前后各取快照，
 不要脱离时间窗口解释单个大数值：
 

@@ -270,7 +270,9 @@ any matching exclude selector takes precedence.
   preflight for the selected data planes.
 - `sing-box api ebpf` reads attachments, recovery state, active programs, map
   occupancy, resource use, UDP/session statistics, fragment/pass counters, and
-  failures from a running instance. It requires the
+  failures from a running instance. For local cgroup it also reports the
+  effective attach, UDP cleanup, socket-storage, and time-source modes after
+  fallback. It requires the
   [sing-box API service](/configuration/service/api/).
 
 The diagnostics response carries a response-level `schemaVersion`, including
