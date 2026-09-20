@@ -97,6 +97,16 @@ func TestEBPFDiagnosticsIncludesEffectiveCgroupPaths(t *testing.T) {
 	}
 }
 
+func TestEBPFDiagnosticsSchemaVersionIncludesEffectiveRuntimeFields(t *testing.T) {
+	if adapter.EBPFDiagnosticsSchemaVersion != 5 {
+		t.Fatalf("schema version = %d, want 5 after adding effective runtime fields", adapter.EBPFDiagnosticsSchemaVersion)
+	}
+	diagnostics := diagnosticsForAPI(EBPFDiagnostics{SchemaVersion: adapter.EBPFDiagnosticsSchemaVersion, LocalCgroupAttachMode: "link_create"})
+	if diagnostics.SchemaVersion != 5 {
+		t.Fatalf("diagnostics schema version = %d, want 5", diagnostics.SchemaVersion)
+	}
+}
+
 func TestKernelRuntimeForAPI(t *testing.T) {
 	observedAt := time.UnixMilli(1700000000123)
 	diagnostics := kernelRuntimeForAPI(observedAt, commonEBPF.RuntimeState{
