@@ -7405,6 +7405,7 @@ type EBPFDiagnosticsResponse struct {
 	state         protoimpl.MessageState        `protogen:"open.v1"`
 	Inbounds      []*EBPFInboundDiagnostics     `protobuf:"bytes,1,rep,name=inbounds,proto3" json:"inbounds,omitempty"`
 	KernelRuntime *EBPFKernelRuntimeDiagnostics `protobuf:"bytes,2,opt,name=kernelRuntime,proto3" json:"kernelRuntime,omitempty"`
+	SchemaVersion int32                         `protobuf:"varint,3,opt,name=schemaVersion,proto3" json:"schemaVersion,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -7451,6 +7452,13 @@ func (x *EBPFDiagnosticsResponse) GetKernelRuntime() *EBPFKernelRuntimeDiagnosti
 		return x.KernelRuntime
 	}
 	return nil
+}
+
+func (x *EBPFDiagnosticsResponse) GetSchemaVersion() int32 {
+	if x != nil {
+		return x.SchemaVersion
+	}
+	return 0
 }
 
 type EBPFKernelRuntimeDiagnostics struct {
@@ -9181,10 +9189,11 @@ const file_daemon_started_service_proto_rawDesc = "" +
 	"\n" +
 	"identifier\x18\x01 \x01(\tR\n" +
 	"identifier\x12\x16\n" +
-	"\x06typeID\x18\x02 \x01(\x05R\x06typeID\"\xa1\x01\n" +
+	"\x06typeID\x18\x02 \x01(\x05R\x06typeID\"\xc7\x01\n" +
 	"\x17EBPFDiagnosticsResponse\x12:\n" +
 	"\binbounds\x18\x01 \x03(\v2\x1e.daemon.EBPFInboundDiagnosticsR\binbounds\x12J\n" +
-	"\rkernelRuntime\x18\x02 \x01(\v2$.daemon.EBPFKernelRuntimeDiagnosticsR\rkernelRuntime\"\xe9\x01\n" +
+	"\rkernelRuntime\x18\x02 \x01(\v2$.daemon.EBPFKernelRuntimeDiagnosticsR\rkernelRuntime\x12$\n" +
+	"\rschemaVersion\x18\x03 \x01(\x05R\rschemaVersion\"\xe9\x01\n" +
 	"\x1cEBPFKernelRuntimeDiagnostics\x12\x1e\n" +
 	"\n" +
 	"observedAt\x18\x01 \x01(\x03R\n" +

@@ -811,6 +811,7 @@ message NotificationCancel {
 message EBPFDiagnosticsResponse {
   repeated EBPFInboundDiagnostics inbounds = 1;
   EBPFKernelRuntimeDiagnostics kernelRuntime = 2;
+  int32 schemaVersion = 3;
 }
 
 message EBPFKernelRuntimeDiagnostics {

@@ -79,7 +79,7 @@ func TestGetEBPFDiagnosticsUsesSingBoxAPI(t *testing.T) {
 	manager := &testInboundManager{inbounds: []adapter.Inbound{
 		&testPlainInbound{tag: "direct-in"},
 		&testEBPFInbound{tag: "ebpf-in", diagnostics: adapter.EBPFRuntimeDiagnostics{
-			SchemaVersion: 3,
+			SchemaVersion: adapter.EBPFDiagnosticsSchemaVersion,
 			ObservedAt:    observedAt,
 			Tag:           "ebpf-in",
 			State:         "recovering",
@@ -129,6 +129,9 @@ func TestGetEBPFDiagnosticsUsesSingBoxAPI(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if response.SchemaVersion != adapter.EBPFDiagnosticsSchemaVersion {
+		t.Fatalf("schema version = %d, want %d", response.SchemaVersion, adapter.EBPFDiagnosticsSchemaVersion)
+	}
 	if len(response.Inbounds) != 1 {
 		t.Fatalf("inbounds = %d, want one eBPF provider", len(response.Inbounds))
 	}
@@ -156,6 +159,23 @@ func TestGetEBPFDiagnosticsUsesSingBoxAPI(t *testing.T) {
 		response.KernelRuntime.Programs[0].Id != 42 || response.KernelRuntime.MapOccupancy == nil ||
 		len(response.KernelRuntime.MapOccupancy.Maps) != 1 || response.KernelRuntime.MapOccupancy.Maps[0].Entries != 3 {
 		t.Fatalf("kernel runtime = %+v", response.KernelRuntime)
+	}
+}
+
+func TestGetEBPFDiagnosticsReturnsSchemaVersionWithoutInbound(t *testing.T) {
+	service := &StartedService{
+		serviceStatus: &ServiceStatus{Status: ServiceStatus_STARTED},
+		instance:      &Instance{inboundManager: &testInboundManager{}},
+	}
+	response, err := service.GetEBPFDiagnostics(context.Background(), &emptypb.Empty{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if response.SchemaVersion != adapter.EBPFDiagnosticsSchemaVersion {
+		t.Fatalf("schema version = %d, want %d", response.SchemaVersion, adapter.EBPFDiagnosticsSchemaVersion)
+	}
+	if len(response.Inbounds) != 0 {
+		t.Fatalf("inbounds = %d, want none", len(response.Inbounds))
 	}
 }
 
@@ -201,6 +221,9 @@ func TestGetEBPFDiagnosticsGRPCRegistrationAndAuthentication(t *testing.T) {
 	response, err := client.GetEBPFDiagnostics(authenticatedContext, &emptypb.Empty{})
 	if err != nil {
 		t.Fatal(err)
+	}
+	if response.SchemaVersion != adapter.EBPFDiagnosticsSchemaVersion {
+		t.Fatalf("RPC schema version = %d, want %d", response.SchemaVersion, adapter.EBPFDiagnosticsSchemaVersion)
 	}
 	if len(response.Inbounds) != 1 || response.Inbounds[0].Tag != "ebpf-in" {
 		t.Fatalf("unexpected RPC response: %+v", response.Inbounds)

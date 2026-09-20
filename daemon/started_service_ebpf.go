@@ -16,7 +16,11 @@ func (s *StartedService) GetEBPFDiagnostics(_ context.Context, _ *emptypb.Empty)
 	if s.serviceStatus.Status != ServiceStatus_STARTED || s.instance == nil {
 		return nil, os.ErrInvalid
 	}
-	response := &EBPFDiagnosticsResponse{}
+	// Keep the response-level schema version available even when no eBPF
+	// inbound is running. It versions the complete response, including the
+	// process-wide kernel runtime section; each inbound retains a compatibility
+	// copy for clients that predate this response-level field.
+	response := &EBPFDiagnosticsResponse{SchemaVersion: adapter.EBPFDiagnosticsSchemaVersion}
 	if s.instance.inboundManager == nil {
 		return response, nil
 	}

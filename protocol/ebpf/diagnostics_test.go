@@ -12,6 +12,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/sagernet/sing-box/adapter"
 	"github.com/sagernet/sing-box/option"
 
 	commonEBPF "github.com/CHIZI-0618/sing-ebpf"
@@ -54,8 +55,8 @@ func (l *captureLogger) PanicContext(context.Context, ...any) {}
 func TestDiagnosticsReportsWaitingForInterfaceWhenNothingIsAttachedYet(t *testing.T) {
 	inbound := &Inbound{localEnabled: true, localDataPlane: localDataPlaneTC}
 	diagnostics := inbound.Diagnostics()
-	if diagnostics.SchemaVersion != 3 || diagnostics.ObservedAt.IsZero() {
-		t.Fatalf("diagnostics metadata = version %d at %v, want schema version 3 and timestamp", diagnostics.SchemaVersion, diagnostics.ObservedAt)
+	if diagnostics.SchemaVersion != adapter.EBPFDiagnosticsSchemaVersion || diagnostics.ObservedAt.IsZero() {
+		t.Fatalf("diagnostics metadata = version %d at %v, want schema version %d and timestamp", diagnostics.SchemaVersion, diagnostics.ObservedAt, adapter.EBPFDiagnosticsSchemaVersion)
 	}
 	if diagnostics.State != EBPFDiagnosticsStateWaitingForInterface {
 		t.Fatalf("state = %s, want %s", diagnostics.State, EBPFDiagnosticsStateWaitingForInterface)

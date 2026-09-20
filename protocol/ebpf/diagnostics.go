@@ -26,8 +26,7 @@ type EBPFAttachmentDiagnostics = commonEBPF.AttachmentInfo
 // below into the one value most operators actually want at a glance; the
 // individual fields remain available for anything more specific.
 const (
-	ebpfDiagnosticsSchemaVersion = 3
-	ebpfDiagnosticsAPICacheTTL   = 500 * time.Millisecond
+	ebpfDiagnosticsAPICacheTTL = 500 * time.Millisecond
 
 	// EBPFDiagnosticsStateNormal is every configured data plane attached and
 	// no recovery outstanding.
@@ -429,7 +428,7 @@ func kernelRuntimeForAPI(observedAt time.Time, runtimeState commonEBPF.RuntimeSt
 // longer than one of those already does elsewhere.
 func (i *Inbound) Diagnostics() EBPFDiagnostics {
 	diagnostics := EBPFDiagnostics{
-		SchemaVersion:   ebpfDiagnosticsSchemaVersion,
+		SchemaVersion:   adapter.EBPFDiagnosticsSchemaVersion,
 		ObservedAt:      time.Now(),
 		Tag:             i.Tag(),
 		LocalEnabled:    i.localEnabled,
