@@ -273,6 +273,10 @@ any matching exclude selector takes precedence.
   failures from a running instance. It requires the
   [sing-box API service](/configuration/service/api/).
 
+The diagnostics response carries a response-level `schemaVersion`, including
+when no eBPF inbound is running. Clients should use that value to version the
+whole response; the per-inbound copy is retained for older clients.
+
 See [eBPF troubleshooting](/manual/misc/ebpf-troubleshooting/) for commands and
 counter interpretation.
 

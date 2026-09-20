@@ -253,6 +253,9 @@ raw-IP、PPP/PPPoE 和受支持的隧道链路应使用 `socket_assign`。local 
   UDP/会话统计、分片/放行计数和失败信息；需要启用
   [sing-box API 服务](/zh/configuration/service/api/)。
 
+诊断响应在顶层携带 `schemaVersion`，即使当前没有运行中的 eBPF 入站也会返回。客户端
+应以该字段作为整份响应的版本；每个入站中的同名字段仅为兼容旧客户端而保留。
+
 具体命令和计数解释见 [eBPF 问题排查](/zh/manual/misc/ebpf-troubleshooting/)。
 
 ## 限制
